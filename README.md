@@ -1,20 +1,61 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Motion Extraction</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* General Body & Layout */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #111827; /* Darker gray for better contrast */
+            background-color: #111827;
+            color: #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            margin: 0;
         }
+
+        .container {
+            width: 100%;
+            max-width: 56rem; /* Equivalent to max-w-4xl */
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
         /* Hide the default file input button */
         input[type="file"] {
             display: none;
         }
+
+        /* Header */
+        header {
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: #ffffff;
+        }
+
+        header p {
+            margin-top: 1rem;
+            font-size: 1.125rem;
+            color: #9ca3af;
+        }
+        
+        /* Upload Area */
         .custom-file-upload {
             border: 2px dashed #4a5568;
             display: inline-flex;
@@ -23,11 +64,124 @@
             padding: 2rem 4rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            color: #9ca3af;
         }
+
         .custom-file-upload:hover {
             border-color: #a0aec0;
             background-color: #1f2937;
+            color: #ffffff;
         }
+
+        .custom-file-upload svg {
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        /* Player & Controls */
+        #player-container .canvas-wrapper {
+            position: relative;
+            background-color: #000;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        #video-canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .controls-panel {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+        }
+
+        .controls-row-1 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .slider-group-1 {
+            flex-grow: 1;
+        }
+
+        .controls-row-2 {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #d1d5db;
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+
+        label span {
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-indigo { background-color: #4f46e5; }
+        .btn-indigo:hover { background-color: #6366f1; }
+        .btn-gray { background-color: #4b5563; }
+        .btn-gray:hover { background-color: #6b7280; }
+        .btn-green { background-color: #16a34a; }
+        .btn-green:hover { background-color: #22c55e; }
+        .btn-red { background-color: #dc2626; }
+        .btn-red:hover { background-color: #ef4444; }
+
+
+        /* Note & Link */
+        .note {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 1rem;
+            text-align: left;
+        }
+        .inspiration-link {
+            display: block;
+            text-align: left;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            transition: color 0.3s ease;
+        }
+        .inspiration-link:hover {
+            color: #d1d5db;
+        }
+        
         /* Custom slider styles */
         input[type=range] {
             -webkit-appearance: none;
@@ -72,6 +226,24 @@
         }
         input[type=range]:disabled::-moz-range-thumb {
             background: #718096;
+        }
+
+        /* Responsive */
+        @media (min-width: 640px) {
+            .btn {
+                 padding: 0.5rem 1.5rem;
+            }
+             .button-group {
+                gap: 1rem;
+            }
+        }
+        @media (min-width: 768px) {
+            .controls-row-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+             h1 {
+                font-size: 3rem;
+            }
         }
     </style>
 
@@ -158,18 +330,18 @@
         }
     </script>
 </head>
-<body class="bg-gray-900 text-gray-200 flex flex-col items-center justify-center min-h-screen p-4">
+<body>
 
-    <div class="w-full max-w-4xl mx-auto text-center">
-        <header class="mb-8">
-            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">Motion Extraction</h1>
-            <p class="mt-4 text-lg text-gray-400">Upload an MP4, apply filters & offset amount to extract the motion in any video.</p>
+    <div class="container">
+        <header>
+            <h1>Motion Extraction</h1>
+            <p>Upload an MP4, apply filters & offset amount to extract the motion in any video.</p>
         </header>
 
         <!-- Video Upload Section -->
         <div id="upload-container">
-            <label for="video-upload" class="custom-file-upload rounded-lg text-gray-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <label for="video-upload" class="custom-file-upload">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -180,45 +352,47 @@
 
         <!-- Video Player Section (Initially Hidden) -->
         <div id="player-container" class="hidden">
-            <div class="relative bg-black rounded-lg shadow-xl overflow-hidden">
-                <canvas id="video-canvas" class="w-full h-auto block"></canvas>
+            <div class="canvas-wrapper">
+                <canvas id="video-canvas"></canvas>
             </div>
             
-            <div class="mt-6 p-6 bg-gray-800 rounded-lg">
-                <div class="flex items-center justify-between gap-x-8">
-                     <div class="flex flex-wrap items-center gap-2 sm:gap-x-4">
-                        <button id="play-pause" class="px-4 py-2 sm:px-6 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Play</button>
-                        <button id="edges-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Edges</button>
-                        <button id="glow-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Glow</button>
-                        <button id="upload-new-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">New Video</button>
-                        <button id="download-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Download</button>
+            <div class="controls-panel">
+                <div class="controls-row-1">
+                     <div class="button-group">
+                        <button id="play-pause" class="btn btn-indigo">Play</button>
+                        <button id="edges-btn" class="btn btn-gray">Edges</button>
+                        <button id="glow-btn" class="btn btn-gray">Glow</button>
+                        <button id="upload-new-btn" class="btn btn-gray">New Video</button>
+                        <button id="download-btn" class="btn btn-green">Download</button>
                     </div>
-                    <div class="flex-grow">
-                        <label for="offset-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Frame Offset: <span id="offset-value" class="font-bold text-white">50</span></label>
-                        <input id="offset-slider" type="range" min="1" max="150" value="50" class="w-full">
+                    <div class="slider-group-1">
+                        <label for="offset-slider">Frame Offset: <span id="offset-value">50</span></label>
+                        <input id="offset-slider" type="range" min="1" max="150" value="50">
                     </div>
                 </div>
-                 <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                 <div class="controls-row-2">
                     <div>
-                        <label for="speed-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Playback Speed: <span id="speed-value" class="font-bold text-white">1.00</span>x</label>
-                        <input id="speed-slider" type="range" min="0.25" max="2" value="1" step="0.25" class="w-full">
+                        <label for="speed-slider">Playback Speed: <span id="speed-value">1.00</span>x</label>
+                        <input id="speed-slider" type="range" min="0.25" max="2" value="1" step="0.25">
                     </div>
                      <div>
-                        <label for="glow-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Glow Amount: <span id="glow-value" class="font-bold text-white">5</span></label>
-                        <input id="glow-slider" type="range" min="0" max="20" value="5" step="1" class="w-full" disabled>
+                        <label for="glow-slider">Glow Amount: <span id="glow-value">5</span></label>
+                        <input id="glow-slider" type="range" min="0" max="20" value="5" step="1" disabled>
                     </div>
                 </div>
-                 <p class="text-xs text-gray-500 mt-4 text-left">Note: Offset calculation assumes a video frame rate of 30 FPS. Results may vary for videos with different frame rates. Downloads are in WebM format.</p>
-                 <a href="https://www.youtube.com/watch?v=NSS6yAMZF78" target="_blank" rel="noopener noreferrer" class="block text-left mt-2 text-xs text-gray-500 hover:text-gray-300 transition-colors">Inspired by Posy</a>
+                 <p class="note">Note: Offset calculation assumes a video frame rate of 30 FPS. Results may vary for videos with different frame rates. Downloads are in WebM format.</p>
+                 <a href="https://www.youtube.com/watch?v=NSS6yAMZF78" target="_blank" rel="noopener noreferrer" class="inspiration-link">Inspired by Posy</a>
+                 <a href="https://x.com/Cruel_Coppinger" target="_blank" rel="noopener noreferrer" class="inspiration-link">Vibecoded by @Cruel_Coppinger</a>
             </div>
         </div>
     </div>
 
     <!-- Hidden video elements for processing -->
-    <video id="video1" class="hidden" muted playsinline loop hidden></video>
-    <video id="video2" class="hidden" muted playsinline loop hidden></video>
+    <video id="video1" muted playsinline loop hidden></video>
+    <video id="video2" muted playsinline loop hidden></video>
     
     <script>
+    document.addEventListener('DOMContentLoaded', () => {
         // --- Global Variables ---
         const uploadInput = document.getElementById('video-upload');
         const uploadContainer = document.getElementById('upload-container');
@@ -350,16 +524,16 @@
                         URL.revokeObjectURL(url);
                     }, 100);
                     downloadBtn.textContent = 'Download';
-                    downloadBtn.classList.remove('bg-red-600', 'hover:bg-red-500');
-                    downloadBtn.classList.add('bg-green-600', 'hover:bg-green-500');
+                    downloadBtn.classList.remove('btn-red');
+                    downloadBtn.classList.add('btn-green');
                     setControlsDisabled(false);
                     video1.loop = true;
                 };
                 setControlsDisabled(true);
                 downloadBtn.disabled = false;
                 downloadBtn.textContent = 'Stop & Save';
-                downloadBtn.classList.remove('bg-green-600', 'hover:bg-green-500');
-                downloadBtn.classList.add('bg-red-600', 'hover:bg-red-500');
+                downloadBtn.classList.remove('btn-green');
+                downloadBtn.classList.add('btn-red');
                 video1.loop = false;
                 video1.currentTime = 0;
                 handleSliderChange();
@@ -383,19 +557,15 @@
 
         function toggleEdges() {
             isEdgesEnabled = !isEdgesEnabled;
-            edgesBtn.classList.toggle('bg-gray-600', !isEdgesEnabled);
-            edgesBtn.classList.toggle('hover:bg-gray-500', !isEdgesEnabled);
-            edgesBtn.classList.toggle('bg-indigo-600', isEdgesEnabled);
-            edgesBtn.classList.toggle('hover:bg-indigo-500', isEdgesEnabled);
+            edgesBtn.classList.toggle('btn-gray', !isEdgesEnabled);
+            edgesBtn.classList.toggle('btn-indigo', isEdgesEnabled);
         }
 
         function toggleGlow() {
             isGlowEnabled = !isGlowEnabled;
             glowSlider.disabled = !isGlowEnabled;
-            glowBtn.classList.toggle('bg-gray-600', !isGlowEnabled);
-            glowBtn.classList.toggle('hover:bg-gray-500', !isGlowEnabled);
-            glowBtn.classList.toggle('bg-indigo-600', isGlowEnabled);
-            glowBtn.classList.toggle('hover:bg-indigo-500', isGlowEnabled);
+            glowBtn.classList.toggle('btn-gray', !isGlowEnabled);
+            glowBtn.classList.toggle('btn-indigo', isGlowEnabled);
         }
         
         function handleGlowSliderChange() {
@@ -422,7 +592,6 @@
             canvas.width = video1.videoWidth;
             canvas.height = video1.videoHeight;
             
-            // Set the aspect ratio of the container to match the video
             const canvasContainer = canvas.parentElement;
             if (video1.videoHeight > 0) {
                 const aspectRatio = video1.videoWidth / video1.videoHeight;
@@ -493,17 +662,16 @@
             speedSlider.value = 1;
             speedValue.textContent = '1.00';
             isGlowEnabled = false;
-            glowBtn.classList.remove('bg-indigo-600');
-            glowBtn.classList.add('bg-gray-600');
+            glowBtn.classList.remove('btn-indigo');
+            glowBtn.classList.add('btn-gray');
             glowSlider.value = 5;
             glowValue.textContent = '5';
             glowAmount = 5;
             glowSlider.disabled = true;
             isEdgesEnabled = false;
-            edgesBtn.classList.remove('bg-indigo-600');
-            edgesBtn.classList.add('bg-gray-600');
+            edgesBtn.classList.remove('btn-indigo');
+            edgesBtn.classList.add('btn-gray');
             
-            // Clear the aspect ratio style
             const canvasContainer = canvas.parentElement;
             canvasContainer.style.aspectRatio = '';
         }
@@ -513,11 +681,9 @@
                 return;
             }
 
-            // Update textures
             updateTexture(videoTexture1, video1);
             updateTexture(videoTexture2, video2);
 
-            // Set uniforms
             const resolutionLocation = gl.getUniformLocation(shaderProgram, "u_resolution");
             gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
 
@@ -541,7 +707,6 @@
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D, videoTexture2);
 
-            // Draw
             const positionLocation = gl.getAttribLocation(shaderProgram, "a_position");
             gl.enableVertexAttribArray(positionLocation);
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -551,6 +716,7 @@
 
             animationFrameId = requestAnimationFrame(renderLoop);
         }
+    });
     </script>
 </body>
 </html>
