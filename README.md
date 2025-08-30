@@ -354,7 +354,6 @@
 
     <div class="container">
         <header>
-            <h1>Motion Extraction</h1>
             <p>Upload an MP4, apply filters & offset amount to extract the motion in any video.</p>
         </header>
 
