@@ -74,67 +74,7 @@
             background: #718096;
         }
     </style>
-</head>
-<body class="bg-gray-900 text-gray-200 flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-4xl mx-auto text-center">
-        <header class="mb-8">
-            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">Motion Extraction</h1>
-            <p class="mt-4 text-lg text-gray-400">Upload an MP4, apply filters & offset amount to extract the motion in any video.</p>
-        </header>
-
-        <!-- Video Upload Section -->
-        <div id="upload-container">
-            <label for="video-upload" class="custom-file-upload rounded-lg text-gray-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span>Choose an MP4 file</span>
-            </label>
-            <input id="video-upload" type="file" accept="video/mp4" />
-        </div>
-
-        <!-- Video Player Section (Initially Hidden) -->
-        <div id="player-container" class="hidden">
-            <div class="relative bg-black rounded-lg shadow-xl overflow-hidden">
-                <canvas id="video-canvas" class="w-full h-auto block"></canvas>
-            </div>
-            
-            <div class="mt-6 p-6 bg-gray-800 rounded-lg">
-                <div class="flex items-center justify-between gap-x-8">
-                     <div class="flex flex-wrap items-center gap-2 sm:gap-x-4">
-                        <button id="play-pause" class="px-4 py-2 sm:px-6 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Play</button>
-                        <button id="edges-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Edges</button>
-                        <button id="glow-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Glow</button>
-                        <button id="upload-new-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">New Video</button>
-                        <button id="download-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Download</button>
-                    </div>
-                    <div class="flex-grow">
-                        <label for="offset-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Frame Offset: <span id="offset-value" class="font-bold text-white">50</span></label>
-                        <input id="offset-slider" type="range" min="1" max="150" value="50" class="w-full">
-                    </div>
-                </div>
-                 <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                    <div>
-                        <label for="speed-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Playback Speed: <span id="speed-value" class="font-bold text-white">1.00</span>x</label>
-                        <input id="speed-slider" type="range" min="0.25" max="2" value="1" step="0.25" class="w-full">
-                    </div>
-                     <div>
-                        <label for="glow-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Glow Amount: <span id="glow-value" class="font-bold text-white">5</span></label>
-                        <input id="glow-slider" type="range" min="0" max="20" value="5" step="1" class="w-full" disabled>
-                    </div>
-                </div>
-                 <p class="text-xs text-gray-500 mt-4 text-left">Note: Offset calculation assumes a video frame rate of 30 FPS. Results may vary for videos with different frame rates. Downloads are in WebM format.</p>
-                 <a href="https://www.youtube.com/watch?v=NSS6yAMZF78" target="_blank" rel="noopener noreferrer" class="block text-left mt-2 text-xs text-gray-500 hover:text-gray-300 transition-colors">Inspired by Posy</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hidden video elements for processing -->
-    <video id="video1" class="hidden" muted playsinline loop></video>
-    <video id="video2" class="hidden" muted playsinline loop></video>
-    
     <!-- Shaders for WebGL -->
     <script id="vertex-shader" type="x-shader/x-vertex">
         attribute vec2 a_position;
@@ -217,8 +157,67 @@
             }
         }
     </script>
+</head>
+<body class="bg-gray-900 text-gray-200 flex flex-col items-center justify-center min-h-screen p-4">
 
+    <div class="w-full max-w-4xl mx-auto text-center">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">Motion Extraction</h1>
+            <p class="mt-4 text-lg text-gray-400">Upload an MP4, apply filters & offset amount to extract the motion in any video.</p>
+        </header>
 
+        <!-- Video Upload Section -->
+        <div id="upload-container">
+            <label for="video-upload" class="custom-file-upload rounded-lg text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Choose an MP4 file</span>
+            </label>
+            <input id="video-upload" type="file" accept="video/mp4" />
+        </div>
+
+        <!-- Video Player Section (Initially Hidden) -->
+        <div id="player-container" class="hidden">
+            <div class="relative bg-black rounded-lg shadow-xl overflow-hidden">
+                <canvas id="video-canvas" class="w-full h-auto block"></canvas>
+            </div>
+            
+            <div class="mt-6 p-6 bg-gray-800 rounded-lg">
+                <div class="flex items-center justify-between gap-x-8">
+                     <div class="flex flex-wrap items-center gap-2 sm:gap-x-4">
+                        <button id="play-pause" class="px-4 py-2 sm:px-6 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Play</button>
+                        <button id="edges-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Edges</button>
+                        <button id="glow-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Glow</button>
+                        <button id="upload-new-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">New Video</button>
+                        <button id="download-btn" class="px-4 py-2 sm:px-6 sm:py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap">Download</button>
+                    </div>
+                    <div class="flex-grow">
+                        <label for="offset-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Frame Offset: <span id="offset-value" class="font-bold text-white">50</span></label>
+                        <input id="offset-slider" type="range" min="1" max="150" value="50" class="w-full">
+                    </div>
+                </div>
+                 <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    <div>
+                        <label for="speed-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Playback Speed: <span id="speed-value" class="font-bold text-white">1.00</span>x</label>
+                        <input id="speed-slider" type="range" min="0.25" max="2" value="1" step="0.25" class="w-full">
+                    </div>
+                     <div>
+                        <label for="glow-slider" class="block text-sm font-medium text-gray-300 mb-2 text-left">Glow Amount: <span id="glow-value" class="font-bold text-white">5</span></label>
+                        <input id="glow-slider" type="range" min="0" max="20" value="5" step="1" class="w-full" disabled>
+                    </div>
+                </div>
+                 <p class="text-xs text-gray-500 mt-4 text-left">Note: Offset calculation assumes a video frame rate of 30 FPS. Results may vary for videos with different frame rates. Downloads are in WebM format.</p>
+                 <a href="https://www.youtube.com/watch?v=NSS6yAMZF78" target="_blank" rel="noopener noreferrer" class="block text-left mt-2 text-xs text-gray-500 hover:text-gray-300 transition-colors">Inspired by Posy</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden video elements for processing -->
+    <video id="video1" class="hidden" muted playsinline loop hidden></video>
+    <video id="video2" class="hidden" muted playsinline loop hidden></video>
+    
     <script>
         // --- Global Variables ---
         const uploadInput = document.getElementById('video-upload');
