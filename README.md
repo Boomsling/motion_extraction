@@ -14,16 +14,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh;
             padding: 1rem;
             margin: 0;
+            box-sizing: border-box;
         }
 
         .container {
             width: 100%;
-            max-width: 56rem; /* Equivalent to max-w-4xl */
-            margin-left: auto;
-            margin-right: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
             text-align: center;
         }
 
@@ -38,7 +40,7 @@
 
         /* Header */
         header {
-            margin-bottom: 2rem;
+            margin-bottom: 0; /* Adjusted from 2rem */
         }
 
         h1 {
@@ -49,7 +51,7 @@
         }
 
         header p {
-            margin-top: 1rem;
+            margin-top: 0.5rem; /* Adjusted from 1rem */
             font-size: 1.125rem;
             color: #9ca3af;
         }
@@ -80,22 +82,34 @@
         }
 
         /* Player & Controls */
+        #player-container {
+            flex-grow: 1;
+            min-height: 0; /* Crucial for flex-grow in a column */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
         #player-container .canvas-wrapper {
             position: relative;
             background-color: #000;
             border-radius: 0.5rem;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
             overflow: hidden;
+            flex-grow: 1;
+            min-height: 0; /* Prevent overflow */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #video-canvas {
-            width: 100%;
-            height: auto;
+            max-width: 100%;
+            max-height: 100%;
             display: block;
         }
         
         .controls-panel {
-            margin-top: 1.5rem;
             padding: 1.5rem;
             background-color: #1f2937;
             border-radius: 0.5rem;
@@ -105,7 +119,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .button-group {
@@ -117,6 +132,7 @@
 
         .slider-group-1 {
             flex-grow: 1;
+            min-width: 200px;
         }
 
         .controls-row-2 {
@@ -169,9 +185,14 @@
             margin-top: 1rem;
             text-align: left;
         }
+
+        .links-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
         .inspiration-link {
-            display: block;
-            text-align: left;
             margin-top: 0.5rem;
             font-size: 0.75rem;
             color: #6b7280;
@@ -380,8 +401,10 @@
                     </div>
                 </div>
                  <p class="note">Note: Offset calculation assumes a video frame rate of 30 FPS. Results may vary for videos with different frame rates. Downloads are in WebM format.</p>
-                 <a href="https://www.youtube.com/watch?v=NSS6yAMZF78" target="_blank" rel="noopener noreferrer" class="inspiration-link">Inspired by Posy</a>
-                 <a href="https://x.com/Cruel_Coppinger" target="_blank" rel="noopener noreferrer" class="inspiration-link">Vibecoded by @Cruel_Coppinger</a>
+                 <div class="links-container">
+                    <a href="https://www.youtube.com/watch?v=NSS6yAMZF78" target="_blank" rel="noopener noreferrer" class="inspiration-link">Inspired by Posy</a>
+                    <a href="https://x.com/Cruel_Coppinger" target="_blank" rel="noopener noreferrer" class="inspiration-link">Vibecoded by @Cruel_Coppinger</a>
+                 </div>
             </div>
         </div>
     </div>
@@ -435,6 +458,7 @@
         edgesBtn.addEventListener('click', toggleEdges);
         downloadBtn.addEventListener('click', handleDownload);
         video1.addEventListener('loadedmetadata', setupCanvasAndWebGL);
+        window.addEventListener('resize', resizeCanvas); // For aspect ratio on resize
         
         // --- WebGL Setup ---
         function initWebGL() {
@@ -494,6 +518,19 @@
         function updateTexture(texture, video) {
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+        }
+        
+        function resizeCanvas() {
+             if (!video1.videoWidth || !playerContainer.offsetParent) return;
+
+            const canvasContainer = canvas.parentElement;
+            canvas.width = video1.videoWidth;
+            canvas.height = video1.videoHeight;
+            
+            // Re-apply viewport to ensure crisp rendering after resize
+            if(gl) {
+                gl.viewport(0, 0, canvas.width, canvas.height);
+            }
         }
 
         // --- Core Functions ---
@@ -588,15 +625,6 @@
         }
         
         function setupCanvasAndWebGL() {
-            canvas.width = video1.videoWidth;
-            canvas.height = video1.videoHeight;
-            
-            const canvasContainer = canvas.parentElement;
-            if (video1.videoHeight > 0) {
-                const aspectRatio = video1.videoWidth / video1.videoHeight;
-                canvasContainer.style.aspectRatio = `${aspectRatio}`;
-            }
-
             if (!initWebGL()) return;
             
             const vsSource = document.getElementById('vertex-shader').text;
@@ -609,6 +637,7 @@
             
             gl.useProgram(shaderProgram);
             handleSliderChange();
+            resizeCanvas(); // Set initial size and aspect ratio
         }
 
         function togglePlayback() {
@@ -670,9 +699,6 @@
             isEdgesEnabled = false;
             edgesBtn.classList.remove('btn-indigo');
             edgesBtn.classList.add('btn-gray');
-            
-            const canvasContainer = canvas.parentElement;
-            canvasContainer.style.aspectRatio = '';
         }
 
         function renderLoop() {
@@ -719,4 +745,3 @@
     </script>
 </body>
 </html>
-
