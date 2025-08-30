@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -140,7 +140,9 @@
         attribute vec2 a_position;
         varying vec2 v_texCoord;
         void main() {
-            v_texCoord = a_position * 0.5 + 0.5;
+            // Convert position to texture coordinates and flip the Y-axis
+            vec2 texCoord = a_position * 0.5 + 0.5;
+            v_texCoord = vec2(texCoord.x, 1.0 - texCoord.y);
             gl_Position = vec4(a_position, 0.0, 1.0);
         }
     </script>
@@ -156,13 +158,16 @@
 
         varying vec2 v_texCoord;
 
-        vec4 getDifference() {
-            vec4 color1 = texture2D(u_video1, v_texCoord);
-            vec4 color2 = texture2D(u_video2, v_texCoord);
-            return vec4(abs(color1.rgb - color2.rgb), 1.0);
+        // Calculates the absolute difference between two frames.
+        vec4 getDifference(vec2 texCoord) {
+            vec4 color1 = texture2D(u_video1, texCoord);
+            vec4 color2 = texture2D(u_video2, texCoord);
+            vec3 difference = abs(color1.rgb - color2.rgb);
+            return vec4(difference, 1.0);
         }
 
-        vec4 getEdges(vec4 diff) {
+        // Calculates edges based on the motion difference.
+        vec4 getEdges(vec2 texCoord) {
             float pixelX = 1.0 / u_resolution.x;
             float pixelY = 1.0 / u_resolution.y;
             
@@ -174,9 +179,10 @@
 
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
-                    vec2 offset = vec2(float(i) * pixelX, float(j) * pixelY);
-                    vec4 sample = texture2D(u_video1, v_texCoord + offset) - texture2D(u_video2, v_texCoord + offset);
-                    float gray = dot(abs(sample.rgb), vec3(0.299, 0.587, 0.114));
+                    vec2 offset = texCoord + vec2(float(i) * pixelX, float(j) * pixelY);
+                    // Base edge detection on the standard difference now
+                    vec4 sample = getDifference(offset);
+                    float gray = dot(sample.rgb, vec3(0.299, 0.587, 0.114));
                     gradX += gray * sobelX[i+1][j+1];
                     gradY += gray * sobelY[i+1][j+1];
                 }
@@ -187,7 +193,8 @@
         }
 
         void main() {
-            vec4 motionColor = u_edges ? getEdges(getDifference()) : getDifference();
+            // Call the corrected getDifference function when edges are off
+            vec4 motionColor = u_edges ? getEdges(v_texCoord) : getDifference(v_texCoord);
             
             if (u_glow && u_glowAmount > 0.0) {
                 vec4 totalGlow = vec4(0.0);
@@ -197,9 +204,10 @@
                 // A simplified blur for performance
                 for (int x = -4; x <= 4; x++) {
                     for (int y = -4; y <= 4; y++) {
-                        vec2 offset = vec2(float(x) * blurSizeX, float(y) * blurSizeY);
-                        vec4 sample = u_edges ? getEdges(texture2D(u_video1, v_texCoord + offset) - texture2D(u_video2, v_texCoord + offset)) : texture2D(u_video1, v_texCoord + offset) - texture2D(u_video2, v_texCoord + offset);
-                        totalGlow += abs(sample);
+                        vec2 offset = v_texCoord + vec2(float(x) * blurSizeX, float(y) * blurSizeY);
+                        // Calculate glow based on the corrected functions
+                        vec4 sample = u_edges ? getEdges(offset) : getDifference(offset);
+                        totalGlow += sample;
                     }
                 }
                 
@@ -535,4 +543,3 @@
     </script>
 </body>
 </html>
-
