@@ -422,6 +422,14 @@
         function setupCanvasAndWebGL() {
             canvas.width = video1.videoWidth;
             canvas.height = video1.videoHeight;
+            
+            // Set the aspect ratio of the container to match the video
+            const canvasContainer = canvas.parentElement;
+            if (video1.videoHeight > 0) {
+                const aspectRatio = video1.videoWidth / video1.videoHeight;
+                canvasContainer.style.aspectRatio = `${aspectRatio}`;
+            }
+
             if (!initWebGL()) return;
             
             const vsSource = document.getElementById('vertex-shader').text;
@@ -495,6 +503,10 @@
             isEdgesEnabled = false;
             edgesBtn.classList.remove('bg-indigo-600');
             edgesBtn.classList.add('bg-gray-600');
+            
+            // Clear the aspect ratio style
+            const canvasContainer = canvas.parentElement;
+            canvasContainer.style.aspectRatio = '';
         }
 
         function renderLoop() {
@@ -543,3 +555,4 @@
     </script>
 </body>
 </html>
+
